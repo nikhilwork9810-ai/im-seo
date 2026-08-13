@@ -4,7 +4,7 @@
   "description": "SEO tooling for Internet Moguls hotel clients",
   "main": "index.js",
   "scripts": {
-    "example": "node example.js",
+    "example": "node --env-file=.env example.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -10,6 +10,8 @@ Setup:
 
 1. `npm install`
 2. Copy `.env.example` to `.env` and set `SERPAPI_KEY` to your SerpApi API key.
-3. Run the example query: `SERPAPI_KEY=your_key npm run example -- "your search query"`
+3. `npm run example -- "your search query"`
+
+The key is read automatically from `.env` — no need to set it inline or export it yourself.
 
 See `example.js` for basic usage.
