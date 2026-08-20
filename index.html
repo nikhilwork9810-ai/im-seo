@@ -1,0 +1,1343 @@
+<title>Niranta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Karla:ital,wght@0,300..700;1,400&display=swap">
+
+<style>
+/* ─────────────────────────────────────────────
+   TOKENS — light is the base; dark redefines only values
+   ───────────────────────────────────────────── */
+:root {
+  --ground:      #EFF1EC;
+  --ground-2:    #E4E8E1;
+  --surface:     #FBFCFA;
+  --ink:         #14211F;
+  --ink-soft:    #475854;
+  --ink-faint:   #7A8A85;
+  --rule:        #CFD6CF;
+  --rule-strong: #AEBAB4;
+  --accent:      #8E6222;
+  --accent-lift: #B5883C;
+  --accent-ink:  #FFFDF8;
+  --verdigris:   #3F6459;
+
+  /* the hero band is deliberately dark in both themes */
+  --band:        #0C1614;
+  --band-ink:    #EDF0EA;
+  --band-soft:   #9FB0AA;
+  --band-rule:   #26362F;
+
+  --measure: 63ch;
+  --gutter: clamp(1.25rem, 4vw, 4.5rem);
+  --rail: 1px;
+
+  --step--1: clamp(0.75rem, 0.72rem + 0.15vw, 0.82rem);
+  --step-0:  clamp(0.98rem, 0.94rem + 0.2vw, 1.06rem);
+  --step-1:  clamp(1.15rem, 1.05rem + 0.4vw, 1.35rem);
+  --step-2:  clamp(1.5rem, 1.3rem + 0.9vw, 2.1rem);
+  --step-3:  clamp(2rem, 1.5rem + 2.2vw, 3.4rem);
+  --step-4:  clamp(2.8rem, 1.6rem + 5.6vw, 7rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #0C1614;
+    --ground-2:    #111E1B;
+    --surface:     #16241F;
+    --ink:         #E9EDE6;
+    --ink-soft:    #A7B6B0;
+    --ink-faint:   #74857F;
+    --rule:        #26362F;
+    --rule-strong: #3A4E45;
+    --accent:      #D9A65C;
+    --accent-lift: #E8BE7E;
+    --accent-ink:  #101A17;
+    --verdigris:   #7FA394;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground:      #0C1614;
+  --ground-2:    #111E1B;
+  --surface:     #16241F;
+  --ink:         #E9EDE6;
+  --ink-soft:    #A7B6B0;
+  --ink-faint:   #74857F;
+  --rule:        #26362F;
+  --rule-strong: #3A4E45;
+  --accent:      #D9A65C;
+  --accent-lift: #E8BE7E;
+  --accent-ink:  #101A17;
+  --verdigris:   #7FA394;
+}
+
+/* ─────────────────────────────────────────────
+   BASE
+   ───────────────────────────────────────────── */
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: Karla, "Helvetica Neue", Arial, sans-serif;
+  font-size: var(--step-0);
+  font-weight: 400;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3 {
+  font-family: Marcellus, "Times New Roman", Georgia, serif;
+  font-weight: 400;
+  line-height: 1.08;
+  text-wrap: balance;
+  margin: 0;
+  letter-spacing: 0.005em;
+}
+
+p { margin: 0; }
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--accent-lift);
+  outline-offset: 3px;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--accent);
+  color: var(--accent-ink);
+  padding: 0.75rem 1.25rem;
+  z-index: 200;
+}
+.skip:focus { left: 0.5rem; top: 0.5rem; }
+
+/* utility label — small caps rule, used as every section eyebrow */
+.eyebrow {
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-weight: 600;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 0;
+}
+.eyebrow::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+  max-width: 6rem;
+}
+
+.num { font-variant-numeric: tabular-nums; }
+
+/* ─────────────────────────────────────────────
+   THE RAIL — uninterrupted hairline, fills with scroll
+   ───────────────────────────────────────────── */
+#rail {
+  position: fixed;
+  left: max(0.85rem, 2.2vw);
+  top: 0;
+  bottom: 0;
+  width: var(--rail);
+  background: var(--rule);
+  z-index: 60;
+  pointer-events: none;
+}
+#rail::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: var(--fill, 0%);
+  background: linear-gradient(var(--accent-lift), var(--accent));
+}
+@media (max-width: 700px) { #rail { display: none; } }
+
+/* ─────────────────────────────────────────────
+   HEADER
+   ───────────────────────────────────────────── */
+.head {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.1rem var(--gutter);
+  color: var(--band-ink);
+  transition: background 320ms ease, color 320ms ease, padding 320ms ease,
+              border-color 320ms ease;
+  border-bottom: 1px solid transparent;
+}
+.head[data-stuck="true"] {
+  background: color-mix(in srgb, var(--ground) 92%, transparent);
+  backdrop-filter: blur(14px) saturate(1.1);
+  color: var(--ink);
+  padding-block: 0.7rem;
+  border-bottom-color: var(--rule);
+}
+
+.wordmark {
+  font-family: Marcellus, Georgia, serif;
+  font-size: 1.32rem;
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+  text-decoration: none;
+  margin-right: auto;
+  white-space: nowrap;
+}
+
+.nav {
+  display: flex;
+  gap: 1.65rem;
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 500;
+}
+.nav a {
+  text-decoration: none;
+  padding-block: 0.25rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color 200ms ease, color 200ms ease;
+}
+.nav a:hover { border-bottom-color: var(--accent-lift); }
+@media (max-width: 1000px) { .nav { display: none; } }
+
+.head-tel {
+  font-size: var(--step--1);
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+  white-space: nowrap;
+}
+@media (max-width: 620px) { .head-tel { display: none; } }
+
+.btn {
+  font-family: Karla, sans-serif;
+  font-size: var(--step--1);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  text-decoration: none;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  padding: 0.72rem 1.35rem;
+  cursor: pointer;
+  transition: background 200ms ease, border-color 200ms ease, transform 200ms ease;
+  white-space: nowrap;
+  display: inline-block;
+}
+.btn:hover {
+  background: var(--accent-lift);
+  border-color: var(--accent-lift);
+  transform: translateY(-1px);
+}
+.btn--ghost {
+  background: transparent;
+  color: inherit;
+  border-color: currentColor;
+}
+.btn--ghost:hover {
+  background: transparent;
+  border-color: var(--accent-lift);
+  color: var(--accent-lift);
+}
+
+/* ─────────────────────────────────────────────
+   HERO
+   ───────────────────────────────────────────── */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  background: var(--band);
+  color: var(--band-ink);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  isolation: isolate;
+  overflow: hidden;
+}
+#ambient {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(120% 80% at 20% 10%, transparent 40%, rgba(6,14,12,0.72) 100%),
+    linear-gradient(to top, rgba(6,14,12,0.88) 0%, transparent 55%);
+}
+
+.hero-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 1.6rem;
+  padding: 8rem var(--gutter) 2.5rem;
+  max-width: 1060px;
+}
+.hero .eyebrow { color: var(--accent-lift); }
+.hero .eyebrow::after { background: var(--band-rule); }
+
+.hero h1 {
+  font-size: var(--step-4);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.hero-sub {
+  font-size: var(--step-1);
+  color: var(--band-soft);
+  max-width: 46ch;
+  font-weight: 300;
+}
+.hero-sub em {
+  font-style: normal;
+  color: var(--band-ink);
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 1px;
+}
+
+/* ─────────────────────────────────────────────
+   BOOKING BAR — the functional centerpiece
+   ───────────────────────────────────────────── */
+.book {
+  background: color-mix(in srgb, var(--band) 78%, transparent);
+  backdrop-filter: blur(18px) saturate(1.2);
+  border-top: 1px solid var(--band-rule);
+  padding: 1.1rem var(--gutter) 1.3rem;
+}
+.book-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem 1.4rem;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+.field > span {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 600;
+  color: var(--band-soft);
+}
+.field input,
+.field select {
+  font-family: Karla, sans-serif;
+  font-size: var(--step-0);
+  font-variant-numeric: tabular-nums;
+  background: transparent;
+  color: var(--band-ink);
+  border: 0;
+  border-bottom: 1px solid var(--band-rule);
+  padding: 0.35rem 0;
+  min-width: 7.5rem;
+  transition: border-color 200ms ease;
+  border-radius: 0;
+}
+.field input:hover,
+.field select:hover,
+.field input:focus,
+.field select:focus { border-bottom-color: var(--accent-lift); }
+.field select { padding-right: 1rem; }
+.field option { color: #14211F; background: #FBFCFA; }
+
+.book .btn { margin-left: auto; padding-block: 0.85rem; }
+.book-note {
+  flex-basis: 100%;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--band-soft);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.book-note::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: var(--accent-lift);
+  border-radius: 50%;
+  flex: none;
+}
+@media (max-width: 760px) {
+  .book .btn { margin-left: 0; width: 100%; text-align: center; }
+  .field input, .field select { min-width: 0; width: 100%; }
+  .field { flex: 1 1 8rem; }
+}
+
+/* ─────────────────────────────────────────────
+   SECTIONS
+   ───────────────────────────────────────────── */
+.section {
+  padding: clamp(4.5rem, 9vw, 8.5rem) var(--gutter);
+}
+.section--alt { background: var(--ground-2); }
+.section--band {
+  background: var(--band);
+  color: var(--band-ink);
+}
+.section--band .eyebrow { color: var(--accent-lift); }
+.section--band .eyebrow::after { background: var(--band-rule); }
+
+.wrap { max-width: 1180px; margin-inline: auto; }
+
+.split {
+  display: grid;
+  gap: clamp(2rem, 5vw, 5rem);
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  align-items: start;
+}
+/* The short left column holds position while the long right column scrolls. */
+@media (min-width: 881px) {
+  .split > :first-child { position: sticky; top: 6.5rem; }
+}
+@media (max-width: 880px) { .split { grid-template-columns: 1fr; } }
+
+.statement {
+  font-size: var(--step-3);
+  font-family: Marcellus, Georgia, serif;
+  line-height: 1.14;
+  margin: 1.4rem 0 0;
+  text-wrap: balance;
+}
+.statement span { color: var(--accent); }
+
+.prose {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  max-width: var(--measure);
+  color: var(--ink-soft);
+}
+.section--band .prose { color: var(--band-soft); }
+
+/* stat trio */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  margin-top: 2.6rem;
+  border: 1px solid var(--rule);
+}
+.stat {
+  background: var(--ground);
+  padding: 1.4rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.section--alt .stat { background: var(--ground-2); }
+.stat b {
+  font-family: Marcellus, Georgia, serif;
+  font-size: var(--step-2);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+.stat span {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--ink-faint);
+}
+
+/* ─────────────────────────────────────────────
+   ROOM CARDS
+   ───────────────────────────────────────────── */
+.rooms {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  gap: clamp(1.5rem, 3vw, 2.4rem);
+  margin-top: 3rem;
+}
+.room {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  overflow: hidden;
+  transition: border-color 300ms ease, transform 300ms ease;
+}
+.room:hover { border-color: var(--rule-strong); transform: translateY(-3px); }
+
+.frame {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--ground-2);
+}
+.frame canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 700ms cubic-bezier(.16,.84,.28,1);
+}
+.room:hover .frame canvas { transform: scale(1.045); }
+.slot {
+  position: absolute;
+  left: 0.85rem;
+  bottom: 0.8rem;
+  right: 0.85rem;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(240,244,238,0.82);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.slot::before {
+  content: "";
+  width: 1.1rem;
+  height: 1px;
+  background: var(--accent-lift);
+  flex: none;
+}
+
+.room-body {
+  padding: 1.5rem 1.4rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  flex: 1;
+}
+.room-body h3 { font-size: var(--step-2); }
+.room-body p { color: var(--ink-soft); font-size: 0.95rem; }
+.specs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: var(--ink-faint);
+}
+.room-foot {
+  margin-top: auto;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.rate {
+  font-family: Marcellus, Georgia, serif;
+  font-size: var(--step-1);
+  font-variant-numeric: tabular-nums;
+}
+.rate small {
+  display: block;
+  font-family: Karla, sans-serif;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink-faint);
+  margin-top: 0.15rem;
+}
+.link {
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 2px;
+  transition: color 200ms ease, border-color 200ms ease;
+}
+.link:hover { color: var(--accent-lift); border-color: var(--accent-lift); }
+
+/* ─────────────────────────────────────────────
+   AMENITIES — read down the rail
+   ───────────────────────────────────────────── */
+.amenities {
+  list-style: none;
+  margin: 2.6rem 0 0;
+  padding: 0;
+  columns: 2;
+  column-gap: clamp(1.5rem, 4vw, 4rem);
+  max-width: 60rem;
+}
+@media (max-width: 620px) { .amenities { columns: 1; } }
+.amenities li {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--band-rule);
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  break-inside: avoid;
+}
+.amenities i {
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--accent-lift);
+  flex: none;
+}
+
+/* ─────────────────────────────────────────────
+   GALLERY
+   ───────────────────────────────────────────── */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: clamp(0.6rem, 1.4vw, 1rem);
+  margin-top: 3rem;
+}
+/* Each tile sets its own ratio; same specificity as .frame, later in source. */
+.g1 { grid-column: span 4; aspect-ratio: 16 / 10; }
+.g2 { grid-column: span 2; aspect-ratio: 4 / 5; }
+.g3 { grid-column: span 2; aspect-ratio: 1; }
+.g4 { grid-column: span 2; aspect-ratio: 1; }
+.g5 { grid-column: span 2; aspect-ratio: 1; }
+@media (max-width: 760px) {
+  .gallery { grid-template-columns: repeat(2, 1fr); }
+  .g1, .g2, .g3, .g4, .g5 { grid-column: span 2; aspect-ratio: 4 / 3; }
+}
+
+/* ─────────────────────────────────────────────
+   CONTACT + FORM
+   ───────────────────────────────────────────── */
+.contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+.contact-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--rule);
+}
+.contact-list b {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 600;
+  color: var(--ink-faint);
+}
+.contact-list a, .contact-list span { font-size: var(--step-1); text-decoration: none; }
+.contact-list a { border-bottom: 1px solid var(--rule-strong); width: fit-content; }
+.contact-list a:hover { border-bottom-color: var(--accent); }
+
+form { display: flex; flex-direction: column; gap: 1.4rem; margin-top: 2rem; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; }
+@media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
+
+label { display: flex; flex-direction: column; gap: 0.45rem; }
+label > span {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+  color: var(--ink-faint);
+}
+label input, label select, label textarea {
+  font-family: Karla, sans-serif;
+  font-size: var(--step-0);
+  background: transparent;
+  color: var(--ink);
+  border: 0;
+  border-bottom: 1px solid var(--rule-strong);
+  padding: 0.5rem 0;
+  border-radius: 0;
+  transition: border-color 200ms ease;
+}
+label input:focus, label select:focus, label textarea:focus { border-bottom-color: var(--accent); }
+label textarea { resize: vertical; min-height: 4.5rem; }
+
+#form-msg {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  border-left: 2px solid var(--accent);
+  padding: 0.6rem 0 0.6rem 1rem;
+  display: none;
+}
+#form-msg[data-shown="true"] { display: block; }
+
+/* ─────────────────────────────────────────────
+   STICKY WHATSAPP
+   ───────────────────────────────────────────── */
+.wa {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 95;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25D366;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 6px 22px rgba(0,0,0,0.28);
+  transition: transform 220ms ease;
+}
+.wa:hover { transform: scale(1.07); }
+.wa svg { width: 30px; height: 30px; fill: #fff; }
+
+/* ─────────────────────────────────────────────
+   FOOTER + BUILD NOTES
+   ───────────────────────────────────────────── */
+.foot {
+  background: var(--band);
+  color: var(--band-soft);
+  padding: 3.5rem var(--gutter) 2.5rem;
+  font-size: 0.85rem;
+}
+.foot-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 3rem;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--band-rule);
+}
+.foot .wordmark { color: var(--band-ink); margin: 0; }
+.foot-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+.foot-links a { text-decoration: none; border-bottom: 1px solid transparent; }
+.foot-links a:hover { border-bottom-color: var(--accent-lift); }
+.foot-bottom { padding-top: 1.5rem; font-size: 0.76rem; letter-spacing: 0.04em; }
+
+.notes {
+  background: var(--ground-2);
+  border-top: 3px solid var(--accent);
+  padding: clamp(2.5rem, 5vw, 4rem) var(--gutter);
+  font-size: 0.9rem;
+}
+.notes h2 { font-size: var(--step-2); margin-bottom: 0.6rem; }
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1.8rem;
+  margin-top: 2rem;
+}
+.notes h3 {
+  font-family: Karla, sans-serif;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.7rem;
+}
+.notes ul { margin: 0; padding-left: 1.1rem; color: var(--ink-soft); }
+.notes li { margin-bottom: 0.45rem; }
+.notes code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.82em;
+  background: var(--ground);
+  padding: 0.1em 0.35em;
+  border: 1px solid var(--rule);
+}
+
+/* ─────────────────────────────────────────────
+   REVEAL
+   ───────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 760ms cubic-bezier(.16,.84,.28,1),
+              transform 760ms cubic-bezier(.16,.84,.28,1);
+}
+.reveal[data-in="true"] { opacity: 1; transform: none; }
+
+.hero-body > * {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: rise 900ms cubic-bezier(.16,.84,.28,1) forwards;
+}
+.hero-body > *:nth-child(1) { animation-delay: 160ms; }
+.hero-body > *:nth-child(2) { animation-delay: 300ms; }
+.hero-body > *:nth-child(3) { animation-delay: 440ms; }
+.hero-body > *:nth-child(4) { animation-delay: 580ms; }
+.book { animation: rise 900ms cubic-bezier(.16,.84,.28,1) 700ms forwards; opacity: 0; }
+
+@keyframes rise { to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .hero-body > *, .book { opacity: 1; transform: none; }
+}
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+<div id="rail" aria-hidden="true"></div>
+
+<header class="head" id="head">
+  <a class="wordmark" href="#top">Niranta</a>
+  <nav class="nav" aria-label="Primary">
+    <a href="#stay">Stay</a>
+    <a href="#rooms">Rooms</a>
+    <a href="#facilities">Facilities</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <a class="head-tel num" href="tel:+910000000000">+91 00000 00000</a>
+  <a class="btn" href="#book-form">Book Direct</a>
+</header>
+
+<main id="main">
+  <!-- ══ HERO ══ -->
+  <section class="hero" id="top">
+    <canvas id="ambient" aria-hidden="true"></canvas>
+
+    <div class="hero-body">
+      <p class="eyebrow">Official Website · Best Rate Guaranteed</p>
+      <h1>Niranta</h1>
+      <p class="hero-sub">
+        A name that means <em>uninterrupted</em> — rest that holds, whatever hour
+        you arrive. <span class="slot-inline">[Replace with the property's own positioning line.]</span>
+      </p>
+      <p class="eyebrow" style="max-width:24rem">Scroll to explore</p>
+    </div>
+
+    <!-- BOOKING BAR → live SynXis deep link -->
+    <form class="book" id="book-form" aria-label="Check availability">
+      <div class="book-inner">
+        <label class="field">
+          <span>Check in</span>
+          <input type="date" id="arrive" required>
+        </label>
+        <label class="field">
+          <span>Check out</span>
+          <input type="date" id="depart" required>
+        </label>
+        <label class="field">
+          <span>Rooms</span>
+          <select id="roomQty">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Adults</span>
+          <select id="adult">
+            <option>1</option><option selected>2</option><option>3</option><option>4</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Children</span>
+          <select id="child">
+            <option selected>0</option><option>1</option><option>2</option><option>3</option>
+          </select>
+        </label>
+        <button class="btn" type="submit">Check Availability</button>
+        <p class="book-note">Live connection to the property's SynXis booking engine · rates in INR</p>
+      </div>
+    </form>
+  </section>
+
+  <!-- ══ STAY / ABOUT ══ -->
+  <section class="section" id="stay">
+    <div class="wrap split reveal">
+      <div>
+        <p class="eyebrow">The Property</p>
+        <h2 class="statement">
+          Booking direct is the <span>shortest route</span> between a guest and a room.
+        </h2>
+      </div>
+      <div>
+        <div class="prose">
+          <p>
+            <strong>[About paragraph 1 — replace.]</strong> This is where the property's
+            own description goes: what Niranta is, where it sits, and who it is for.
+            Two to three short paragraphs, written to answer the one question a
+            visitor arrives with — <em>is this the right place for me tonight?</em>
+          </p>
+          <p>
+            <strong>[About paragraph 2 — replace.]</strong> The second paragraph earns
+            the direct booking: what a guest gets here that no OTA listing can offer
+            them — the room they actually chose, the rate without the commission, a
+            number they can call.
+          </p>
+        </div>
+        <div class="stats">
+          <div class="stat"><b class="num">00</b><span>Rooms &amp; suites</span></div>
+          <div class="stat"><b class="num">0.0★</b><span>Guest rating</span></div>
+          <div class="stat"><b class="num">24/7</b><span>Front desk</span></div>
+        </div>
+        <p style="margin-top:1rem;font-size:0.76rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint)">
+          Figures above are placeholders — supply the real numbers before launch
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ROOMS ══ -->
+  <section class="section section--alt" id="rooms">
+    <div class="wrap reveal">
+      <p class="eyebrow">Rooms</p>
+      <h2 class="statement" style="max-width:34ch">Every room type, one page, one clear rate.</h2>
+
+      <div class="rooms">
+        <article class="room">
+          <div class="frame">
+            <canvas data-seed="11" aria-hidden="true"></canvas>
+            <p class="slot">Room photo · 1600×1200</p>
+          </div>
+          <div class="room-body">
+            <h3>[Room Type 01]</h3>
+            <p>[One to two sentences on the room — view, bed, what it's best for. Replace with real copy.]</p>
+            <ul class="specs">
+              <li>00 sq ft</li><li>King bed</li><li>Sleeps 2</li>
+            </ul>
+            <div class="room-foot">
+              <p class="rate">₹0,000 <small>per night from</small></p>
+              <a class="link" href="#book-form">Reserve</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="room">
+          <div class="frame">
+            <canvas data-seed="27" aria-hidden="true"></canvas>
+            <p class="slot">Room photo · 1600×1200</p>
+          </div>
+          <div class="room-body">
+            <h3>[Room Type 02]</h3>
+            <p>[One to two sentences on the room — view, bed, what it's best for. Replace with real copy.]</p>
+            <ul class="specs">
+              <li>00 sq ft</li><li>Twin beds</li><li>Sleeps 2</li>
+            </ul>
+            <div class="room-foot">
+              <p class="rate">₹0,000 <small>per night from</small></p>
+              <a class="link" href="#book-form">Reserve</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="room">
+          <div class="frame">
+            <canvas data-seed="43" aria-hidden="true"></canvas>
+            <p class="slot">Suite photo · 1600×1200</p>
+          </div>
+          <div class="room-body">
+            <h3>[Suite]</h3>
+            <p>[One to two sentences on the suite — what makes it the top tier. Replace with real copy.]</p>
+            <ul class="specs">
+              <li>00 sq ft</li><li>King bed</li><li>Sleeps 3</li>
+            </ul>
+            <div class="room-foot">
+              <p class="rate">₹0,000 <small>per night from</small></p>
+              <a class="link" href="#book-form">Reserve</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FACILITIES ══ -->
+  <section class="section section--band" id="facilities">
+    <div class="wrap reveal">
+      <p class="eyebrow">Facilities</p>
+      <h2 class="statement" style="max-width:30ch;color:var(--band-ink)">
+        What is actually here, listed plainly.
+      </h2>
+      <ul class="amenities">
+        <li><i>01</i> [Facility — e.g. restaurant name]</li>
+        <li><i>02</i> [Facility]</li>
+        <li><i>03</i> [Facility]</li>
+        <li><i>04</i> [Facility]</li>
+        <li><i>05</i> [Facility]</li>
+        <li><i>06</i> [Facility]</li>
+        <li><i>07</i> [Facility]</li>
+        <li><i>08</i> [Facility]</li>
+      </ul>
+      <p style="margin-top:1.6rem;font-size:0.76rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--band-soft)">
+        Numbered because a facilities list is a checklist, not a ranking — order is editable
+      </p>
+    </div>
+  </section>
+
+  <!-- ══ GALLERY ══ -->
+  <section class="section" id="gallery">
+    <div class="wrap reveal">
+      <p class="eyebrow">Gallery</p>
+      <h2 class="statement" style="max-width:32ch">The property, photographed honestly.</h2>
+      <div class="gallery">
+        <div class="frame g1"><canvas data-seed="5" aria-hidden="true"></canvas><p class="slot">Hero / exterior · 2400×1500</p></div>
+        <div class="frame g2"><canvas data-seed="61" aria-hidden="true"></canvas><p class="slot">Detail · 1200×1500</p></div>
+        <div class="frame g3"><canvas data-seed="19" aria-hidden="true"></canvas><p class="slot">Dining · 1200×1200</p></div>
+        <div class="frame g4"><canvas data-seed="88" aria-hidden="true"></canvas><p class="slot">Room · 1200×1200</p></div>
+        <div class="frame g5"><canvas data-seed="34" aria-hidden="true"></canvas><p class="slot">Facility · 1200×1200</p></div>
+      </div>
+      <p style="margin-top:1.4rem;font-size:0.76rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint)">
+        Placeholders are generated, not photographs — supply WebP files at the sizes marked
+      </p>
+    </div>
+  </section>
+
+  <!-- ══ CONTACT ══ -->
+  <section class="section section--alt" id="contact">
+    <div class="wrap split reveal">
+      <div>
+        <p class="eyebrow">Contact</p>
+        <h2 class="statement" style="max-width:22ch">Reach the desk directly.</h2>
+        <ul class="contact-list">
+          <li><b>Address</b><span>[Street, locality, city, PIN — replace]</span></li>
+          <li><b>Reservations</b><a class="num" href="tel:+910000000000">+91 00000 00000</a></li>
+          <li><b>WhatsApp</b><a class="num" href="https://wa.me/910000000000?text=Hello%20Niranta%2C%20I%20would%20like%20to%20enquire%20about%20a%20booking">+91 00000 00000</a></li>
+          <li><b>Email</b><a href="mailto:reservations@nirantahotels.com">reservations@nirantahotels.com</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="eyebrow">Enquiry</p>
+        <h2 class="statement" style="max-width:22ch">Or send us the dates.</h2>
+        <form id="enquiry" novalidate>
+          <div class="row">
+            <label><span>Name</span><input type="text" name="name" autocomplete="name" required></label>
+            <label><span>Phone</span><input type="tel" name="phone" autocomplete="tel" required></label>
+          </div>
+          <div class="row">
+            <label><span>Email</span><input type="email" name="email" autocomplete="email" required></label>
+            <label><span>Enquiry for</span>
+              <select name="type">
+                <option>Room booking</option>
+                <option>Group booking</option>
+                <option>Event or banquet</option>
+                <option>Corporate rate</option>
+              </select>
+            </label>
+          </div>
+          <div class="row">
+            <label><span>Check in</span><input type="date" name="in"></label>
+            <label><span>Check out</span><input type="date" name="out"></label>
+          </div>
+          <label><span>Message</span><textarea name="message" rows="3"></textarea></label>
+          <button class="btn" type="submit" style="align-self:flex-start">Send Enquiry</button>
+          <p id="form-msg" role="status"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<a class="wa" href="https://wa.me/910000000000?text=Hello%20Niranta%2C%20I%20would%20like%20to%20enquire%20about%20a%20booking"
+   aria-label="Chat with us on WhatsApp" target="_blank" rel="noopener">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.49-.9-.8-1.5-1.79-1.67-2.09-.17-.3-.02-.46.13-.61.15-.15.32-.35.47-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.34 5.09 4.56.71.31 1.27.49 1.7.63.72.23 1.37.2 1.89.12.58-.09 1.77-.72 2.02-1.42.25-.7.25-1.29.17-1.42-.07-.12-.27-.2-.57-.35zM12 2C6.48 2 2 6.48 2 12c0 1.86.51 3.6 1.4 5.09L2 22l5.05-1.36A9.94 9.94 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+</a>
+
+<footer class="foot">
+  <div class="foot-top">
+    <span class="wordmark">Niranta</span>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="#rooms">Rooms</a>
+      <a href="#facilities">Facilities</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#contact">Contact</a>
+      <a href="#book-form">Book Direct</a>
+    </nav>
+  </div>
+  <p class="foot-bottom">
+    © <span class="num">2026</span> Niranta Hotels · Official website · Design prototype
+    by Internet Moguls · [Privacy Policy] · [Cookie Policy] · [Terms]
+  </p>
+</footer>
+
+<!-- ══ BUILD NOTES — remove before launch ══ -->
+<section class="notes" aria-label="Build notes">
+  <div class="wrap">
+    <h2>Build notes</h2>
+    <p style="color:var(--ink-soft);max-width:var(--measure)">
+      Everything in square brackets is a placeholder. The booking bar is real —
+      it builds a live SynXis deep link from the dates you pick.
+    </p>
+    <div class="notes-grid">
+      <div>
+        <h3>Content still needed</h3>
+        <ul>
+          <li>Positioning line and about copy</li>
+          <li>Room types, sizes, bedding, from-rates</li>
+          <li>Facilities and dining outlets</li>
+          <li>Address, phone, WhatsApp, email</li>
+          <li>Room count, star/guest rating</li>
+          <li>Photography — WebP, under 200&nbsp;KB each, at the sizes marked on each frame</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Booking engine — wired</h3>
+        <ul>
+          <li><code>chain=18410</code> · <code>hotel=66047</code></li>
+          <li>Currency <code>INR</code>, locale <code>en-US</code></li>
+          <li>Dates, rooms, adults, children pass through to SynXis</li>
+          <li>Confirm the confirmation-page URL so a GA4 conversion can fire on it</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Before any traffic</h3>
+        <ul>
+          <li>GTM container + GA4 config tag</li>
+          <li>Cross-domain linker for <code>be.synxis.com</code></li>
+          <li><code>booking_engine_click</code>, <code>enquiry_submit</code>, <code>phone_click</code>, <code>whatsapp_click</code> events</li>
+          <li>Enquiry form backend — currently not connected</li>
+          <li>Hotel + LocalBusiness JSON-LD schema</li>
+          <li>SPF, DKIM, DMARC on the sending domain</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  "use strict";
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ── Booking bar → SynXis deep link ───────────────────────── */
+  const SYNXIS = {
+    base: "https://be.synxis.com/",
+    chain: "18410",
+    hotel: "66047",
+    currency: "INR",
+    locale: "en-US"
+  };
+
+  const iso = d => d.toISOString().slice(0, 10);
+  const arrive = document.getElementById("arrive");
+  const depart = document.getElementById("depart");
+
+  const today = new Date();
+  const tomorrow = new Date(today.getTime() + 864e5);
+  arrive.value = iso(today);
+  arrive.min = iso(today);
+  depart.value = iso(tomorrow);
+  depart.min = iso(tomorrow);
+
+  // Keep check-out after check-in
+  arrive.addEventListener("change", () => {
+    const next = new Date(new Date(arrive.value).getTime() + 864e5);
+    depart.min = iso(next);
+    if (!depart.value || depart.value <= arrive.value) depart.value = iso(next);
+  });
+
+  document.getElementById("book-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const p = new URLSearchParams({
+      chain: SYNXIS.chain,
+      hotel: SYNXIS.hotel,
+      level: "hotel",
+      locale: SYNXIS.locale,
+      currency: SYNXIS.currency,
+      productcurrency: SYNXIS.currency,
+      arrive: arrive.value,
+      depart: depart.value,
+      rooms: document.getElementById("roomQty").value,
+      adult: document.getElementById("adult").value,
+      child: document.getElementById("child").value
+    });
+    // GTM/GA4 hook — booking engine click micro-conversion
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: "booking_engine_click", arrive: arrive.value, depart: depart.value });
+    window.open(SYNXIS.base + "?" + p.toString(), "_blank", "noopener");
+  });
+
+  /* ── Enquiry form: honest about not being connected ───────── */
+  const enquiry = document.getElementById("enquiry");
+  const msg = document.getElementById("form-msg");
+  enquiry.addEventListener("submit", e => {
+    e.preventDefault();
+    msg.textContent =
+      "This form has no backend yet — nothing was sent. Connect it to the reservations inbox or CRM before launch. Until then, WhatsApp and the phone number are the live channels.";
+    msg.dataset.shown = "true";
+  });
+
+  /* ── Header state + rail fill ─────────────────────────────── */
+  const head = document.getElementById("head");
+  const rail = document.getElementById("rail");
+  let queued = false;
+
+  const onScroll = () => {
+    head.dataset.stuck = String(scrollY > innerHeight * 0.82);
+    const max = document.documentElement.scrollHeight - innerHeight;
+    rail.style.setProperty("--fill", (max > 0 ? (scrollY / max) * 100 : 0).toFixed(2) + "%");
+    queued = false;
+  };
+  addEventListener("scroll", () => {
+    if (!queued) { queued = true; requestAnimationFrame(onScroll); }
+  }, { passive: true });
+  onScroll();
+
+  /* ── Scroll reveals ───────────────────────────────────────── */
+  const targets = document.querySelectorAll(".reveal");
+  if (reduce || !("IntersectionObserver" in window)) {
+    targets.forEach(t => (t.dataset.in = "true"));
+  } else {
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach(en => {
+        if (en.isIntersecting) { en.target.dataset.in = "true"; obs.unobserve(en.target); }
+      });
+    }, { rootMargin: "0px 0px -12% 0px", threshold: 0.08 });
+    targets.forEach(t => io.observe(t));
+  }
+
+  /* ── Deterministic placeholder frames ─────────────────────
+     Soft gradient meshes in the brass/verdigris palette, so an
+     empty photo slot reads as composed rather than broken.     */
+  const rand = seed => () => {
+    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+    return seed / 0x7fffffff;
+  };
+  const TINTS = [
+    [12, 22, 20], [63, 100, 89], [140, 108, 58], [181, 136, 60], [34, 54, 47]
+  ];
+
+  const paint = cv => {
+    const r = cv.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    cv.width = Math.round(r.width * dpr);
+    cv.height = Math.round(r.height * dpr);
+    const g = cv.getContext("2d");
+    const nx = rand(Number(cv.dataset.seed) || 7);
+    const { width: w, height: h } = cv;
+
+    g.fillStyle = "#101B18";
+    g.fillRect(0, 0, w, h);
+
+    for (let i = 0; i < 5; i++) {
+      const t = TINTS[Math.floor(nx() * TINTS.length)];
+      const cx = nx() * w, cy = nx() * h;
+      const rad = (0.32 + nx() * 0.55) * Math.max(w, h);
+      const grd = g.createRadialGradient(cx, cy, 0, cx, cy, rad);
+      grd.addColorStop(0, `rgba(${t[0]},${t[1]},${t[2]},0.85)`);
+      grd.addColorStop(1, `rgba(${t[0]},${t[1]},${t[2]},0)`);
+      g.fillStyle = grd;
+      g.fillRect(0, 0, w, h);
+    }
+
+    // grain — keeps flat gradients from looking like a broken image
+    const px = g.getImageData(0, 0, w, h);
+    const d = px.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const n = (nx() - 0.5) * 16;
+      d[i] += n; d[i + 1] += n; d[i + 2] += n;
+    }
+    g.putImageData(px, 0, 0);
+  };
+
+  const frames = document.querySelectorAll(".frame canvas");
+  frames.forEach(paint);
+  if ("ResizeObserver" in window) {
+    let t;
+    const ro = new ResizeObserver(() => {
+      clearTimeout(t);
+      t = setTimeout(() => frames.forEach(paint), 140);
+    });
+    frames.forEach(cv => ro.observe(cv));
+  }
+
+  /* ── Ambient hero field ───────────────────────────────────── */
+  const amb = document.getElementById("ambient");
+  const ag = amb.getContext("2d");
+  let blobs = [], raf = 0;
+
+  const sizeAmbient = () => {
+    const dpr = Math.min(devicePixelRatio || 1, 1.5);
+    amb.width = Math.round(innerWidth * dpr);
+    amb.height = Math.round(amb.getBoundingClientRect().height * dpr);
+  };
+
+  const seedBlobs = () => {
+    const pal = [[63, 100, 89], [181, 136, 60], [24, 44, 40], [46, 74, 66]];
+    blobs = pal.map((c, i) => ({
+      c,
+      x: amb.width * (0.2 + 0.2 * i),
+      y: amb.height * (0.3 + 0.15 * (i % 3)),
+      vx: (i % 2 ? 1 : -1) * (0.09 + i * 0.03),
+      vy: (i % 3 ? -1 : 1) * (0.07 + i * 0.02),
+      r: Math.max(amb.width, amb.height) * (0.34 + i * 0.07)
+    }));
+  };
+
+  const drawAmbient = () => {
+    ag.fillStyle = "#0C1614";
+    ag.fillRect(0, 0, amb.width, amb.height);
+    ag.globalCompositeOperation = "lighter";
+    blobs.forEach(b => {
+      const grd = ag.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+      grd.addColorStop(0, `rgba(${b.c[0]},${b.c[1]},${b.c[2]},0.30)`);
+      grd.addColorStop(1, `rgba(${b.c[0]},${b.c[1]},${b.c[2]},0)`);
+      ag.fillStyle = grd;
+      ag.fillRect(0, 0, amb.width, amb.height);
+    });
+    ag.globalCompositeOperation = "source-over";
+  };
+
+  const tick = () => {
+    blobs.forEach(b => {
+      b.x += b.vx; b.y += b.vy;
+      if (b.x < -b.r * 0.4 || b.x > amb.width + b.r * 0.4) b.vx *= -1;
+      if (b.y < -b.r * 0.4 || b.y > amb.height + b.r * 0.4) b.vy *= -1;
+    });
+    drawAmbient();
+    raf = requestAnimationFrame(tick);
+  };
+
+  const startAmbient = () => {
+    cancelAnimationFrame(raf);
+    sizeAmbient();
+    seedBlobs();
+    if (reduce) drawAmbient(); else tick();
+  };
+  startAmbient();
+
+  let rt;
+  addEventListener("resize", () => {
+    clearTimeout(rt);
+    rt = setTimeout(startAmbient, 180);
+  });
+
+  // Stop the loop when the hero scrolls away — no wasted frames
+  if (!reduce && "IntersectionObserver" in window) {
+    new IntersectionObserver(([en]) => {
+      if (en.isIntersecting) { if (!raf) tick(); }
+      else { cancelAnimationFrame(raf); raf = 0; }
+    }, { threshold: 0 }).observe(amb);
+  }
+})();
+</script>
