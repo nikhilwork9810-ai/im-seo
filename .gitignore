@@ -1,0 +1,12 @@
+# Credentials - never commit these
+.env
+
+# Generated ranking exports
+rankings_*.csv
+serp_rankings_*.csv
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
