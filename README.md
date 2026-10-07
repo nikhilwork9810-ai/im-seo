@@ -59,6 +59,10 @@ API actually uses. Anyone on the team can edit this file without touching the Py
 
 Duplicate keyword and location pairs are skipped with a warning.
 
+One file per client. `keywords.csv` holds the Peerless Hotels set; `keywords_maplebear.csv`
+holds Maple Bear Gulf Schools, Town Square Dubai. Point `--keywords` at whichever you need
+and set `--target-domain` to match.
+
 ### Location codes in use
 
 Every keyword in the current list carries a city modifier, so each one runs from its
@@ -71,6 +75,11 @@ from `/v3/serp/google/locations` for `IN`:
 | Hyderabad, Telangana, India | City | 1007740 | 17 |
 | Kolkata, Kolkata, West Bengal, India | City | 1007828 | 14 |
 | India | Country | 2356 | not used by default |
+
+For Maple Bear Gulf Schools (`keywords_maplebear.csv`), all 12 keywords run from
+`Dubai,Dubai,United Arab Emirates`, code `1000013`, which resolves to google.ae. Town Square
+is a Nshama community off Al Qudra Road and has no location code of its own in the DataForSEO
+database, so Dubai city is the closest available targeting.
 
 Gachibowli has no location code of its own in the DataForSEO location database, so
 the 14 Gachibowli keywords run from Hyderabad city. That is the closest available
