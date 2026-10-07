@@ -1,0 +1,25 @@
+keyword,volume,device,location,status,rank_group,rank_absolute,ranking_url,local_pack_pos
+nursery in abu dhabi,1300,desktop,"Abu Dhabi city",not_found,,,,
+nursery in abu dhabi,1300,mobile,"Abu Dhabi city",ranked,11,18,/our-location/abu-dhabi/nursery-yas-island/,
+preschool in abu dhabi,480,desktop,"Abu Dhabi city",not_found,,,,
+preschool in abu dhabi,480,mobile,"Abu Dhabi city",not_found,,,,
+day care abu dhabi,320,desktop,"Abu Dhabi city",not_found,,,,
+day care abu dhabi,320,mobile,"Abu Dhabi city",not_found,,,,
+best nursery in abu dhabi,210,desktop,"Abu Dhabi city",not_found,,,,
+best nursery in abu dhabi,210,mobile,"Abu Dhabi city",not_found,,,,
+Nursery in Satwa,210,desktop,"Dubai city",not_found,,,,
+Nursery in Satwa,210,mobile,"Dubai city",not_found,,,,
+nursery in reem island Abu Dhabi,110,desktop,"Al Reem Island",ranked,3,7,/our-location/abu-dhabi/nursery-reem-island/,
+nursery in reem island Abu Dhabi,110,mobile,"Al Reem Island",not_found,,,,
+nursery in arabian ranches,50,desktop,"Arabian Ranches",ranked,3,6,/our-location/dubai/nursery-arabian-ranches-3/,
+nursery in arabian ranches,50,mobile,"Arabian Ranches",not_found,,,,
+Nursery in Khalifa City A,40,desktop,"Khalifa City",not_found,,,,
+Nursery in Khalifa City A,40,mobile,"Khalifa City",ranked,3,7,/our-location/abu-dhabi/nursery-al-reef/,
+nursery in Nad Al Sheba,30,desktop,"Nad Al Sheba",ranked,8,14,/our-location/dubai/nursery-meydan/,
+nursery in Nad Al Sheba,30,mobile,"Nad Al Sheba",ranked,18,25,/our-location/ (hub page),
+nursery in yas island,20,desktop,"Yas Island",not_found,,,,6
+nursery in yas island,20,mobile,"Yas Island",not_found,,,,2
+Nursery in Al Wasl,20,desktop,"Al Wasl",ranked,13,18,/our-location/dubai/nursery-wasl1/,
+Nursery in Al Wasl,20,mobile,"Al Wasl",not_found,,,,
+nursery in al reef abu dhabi,10,desktop,"Al Reef",ranked,1,1,/our-location/abu-dhabi/nursery-al-reef/,knowledge panel
+nursery in al reef abu dhabi,10,mobile,"Al Reef",not_found,,,,knowledge panel
